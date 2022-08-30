@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 def read_expresion(string):
 	string2 = string
@@ -11,3 +12,18 @@ def read_expresion(string):
 	# List variables
 	variables = re.findall("[a-z]+",string2)
 	return variables,coefficients,constant
+
+def det(m):
+	# Determinant of a matrix
+	return round(np.linalg.det(m),2)
+
+def adj(m):
+	# Adjugate of a matrix (transpose of cofactor matrix)
+	return np.array([
+		[+det(np.array([[m[1,1],m[1,2]],[m[2,1],m[2,2]]])), -det(np.array([[m[0,1],m[0,2]],[m[2,1],m[2,2]]])), +det(np.array([[m[0,1],m[0,2]],[m[1,1],m[1,2]]]))],
+		[-det(np.array([[m[1,0],m[1,2]],[m[2,0],m[2,2]]])), +det(np.array([[m[0,0],m[0,2]],[m[2,0],m[2,2]]])), -det(np.array([[m[0,0],m[0,2]],[m[1,0],m[1,2]]]))],
+		[+det(np.array([[m[1,0],m[1,1]],[m[2,0],m[2,1]]])), -det(np.array([[m[0,0],m[0,1]],[m[2,0],m[2,1]]])), +det(np.array([[m[0,0],m[0,1]],[m[1,0],m[1,1]]]))]
+	])
+
+def inv(m):
+	return adj(m)/det(m) # also np.linalg.inv(m)
