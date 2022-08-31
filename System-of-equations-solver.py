@@ -3,13 +3,13 @@ import numpy as np
 from fractions import Fraction
 import matplotlib.pyplot as plt
 
-vars = "xyz"
+vars = input("Enter 3 vars (ex: xyz): ")
 ax = plt.figure().gca(projection='3d')
 
 def read_expresion(string):
 	string2 = re.sub("\s","",string)
 	# Add coefficient 1 to single variables (replace "x" with "1x")
-	for i in [i[-1] for i in re.findall("\D{1}[xyz]+"," " + string)]:
+	for i in [i[-1] for i in re.findall("\D{1}[a-z]+"," " + string)]:
 		string2 = re.sub(f"[{i}]","1"+i,string2)
 	# List coefficients (including negatives, decimals and fractions)
 	coefficients = re.findall("[-]?[0-9]+[,.]?[0-9]*[/]?[0-9]*[,.]?[0-9]*",string2)
@@ -101,6 +101,6 @@ The planes intersect in a point:
 	ax.legend()
 	plt.show()
 
-solve(	"3x + 7y + 5z = 0",
-		"x + 3y + z = 3",
-		"y + z = -2")
+solve(	input("Equation 1: "),
+		input("Equation 2: "),
+		input("Equation 3: "))
