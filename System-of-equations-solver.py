@@ -51,6 +51,7 @@ def solve(eq1,eq2,eq3):
 		constants = np.vstack((constants,const))
 	M_a = np.concatenate((M_c,constants),axis=1) # augmented matrix
 
+	# Solve the system
 	if det(M_c) != 0:
 		system_type = "Independent System"
 		# Cramer's rule
@@ -68,6 +69,7 @@ def solve(eq1,eq2,eq3):
 		# Rouché-Frobenius/Capelli theorem
 		if rank(M_c) != rank(M_a): system_type = "Inconsistent System"
 		elif rank(M_c) == rank(M_a) != 3: system_type = "Dependent System"
+
 	# Plot planes
 	for row,eq in zip(M_a,(eq1,eq2,eq3)):
 		X = np.linspace(-10,10,2)
@@ -77,7 +79,21 @@ def solve(eq1,eq2,eq3):
 		surf = ax.plot_surface(X,Y,Z,alpha=0.5,label=eq)
 		surf._facecolors2d=surf._facecolors3d
 		surf._edgecolors2d=surf._edgecolors3d
-	
+
+	# Print solution
+	print(f"\nSystem type: {system_type}")
+	if system_type == "Independent System":
+		print(f"""
+The planes intersect in a point:
+{variables[0]} = {x}
+{variables[1]} = {y}
+{variables[2]} = {z}
+""")
+	elif system_type == "Dependent System":
+		print("\nThis system has infinite possible solutions. The planes intersect in a line or a plane\n")
+	else:
+		print("\nThis system has no solution.\n")
+
 	# Plot settings
 	ax.set_xlabel(f"${variables[0]}$")
 	ax.set_ylabel(f"${variables[1]}$")
