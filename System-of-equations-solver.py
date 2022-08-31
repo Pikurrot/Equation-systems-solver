@@ -1,8 +1,10 @@
 import re
 import numpy as np
 from fractions import Fraction
+import matplotlib.pyplot as plt
 
 vars = "xyz"
+ax = plt.figure().gca(projection='3d')
 
 def read_expresion(string):
 	string2 = re.sub("\s","",string)
@@ -11,7 +13,7 @@ def read_expresion(string):
 		string2 = re.sub(f"[{i}]","1"+i,string2)
 	# List coefficients (including negatives, decimals and fractions)
 	coefficients = re.findall("[-]?[0-9]+[,.]?[0-9]*[/]?[0-9]*[,.]?[0-9]*",string2)
-	coefficients,constant = list(map(Fraction,coefficients[:-1])),Fraction(coefficients[-1]) # Get the constant
+	coefficients,constant = list(map(float,map(Fraction,coefficients[:-1]))),float(Fraction(coefficients[-1])) # Get the constant
 	# List variables
 	variables = re.findall(f"[{vars}]+",string2)
 	# Add remaining variables with coefficient 0
@@ -61,12 +63,28 @@ def solve(eq1,eq2,eq3):
 		x = det(Mx)/det(M_c)
 		y = det(My)/det(M_c)
 		z = det(Mz)/det(M_c)
+		ax.scatter(x,y,z,"o")
 	else:
 		# Rouché-Frobenius/Capelli theorem
 		if rank(M_c) != rank(M_a): system_type = "Inconsistent System"
 		elif rank(M_c) == rank(M_a) != 3: system_type = "Dependent System"
-	pass
+	# Plot planes
+	for row,eq in zip(M_a,(eq1,eq2,eq3)):
+		X = np.linspace(-10,10,2)
+		Y = np.linspace(-10,10,2)
+		X,Y = np.meshgrid(X,Y)
+		Z = (row[3] - row[0]*X - row[1]*Y) / row[2]
+		surf = ax.plot_surface(X,Y,Z,alpha=0.5,label=eq)
+		surf._facecolors2d=surf._facecolors3d
+		surf._edgecolors2d=surf._edgecolors3d
+	
+	# Plot settings
+	ax.set_xlabel(f"${variables[0]}$")
+	ax.set_ylabel(f"${variables[1]}$")
+	ax.set_zlabel(f"${variables[2]}$")
+	ax.legend()
+	plt.show()
 
-solve(	"-x + 7y + 5z = 0",
-		"x - y + z = 3",
+solve(	"3x + 7y + 5z = 0",
+		"x + 3y + z = 3",
 		"y + z = -2")
