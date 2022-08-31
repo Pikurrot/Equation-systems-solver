@@ -36,24 +36,37 @@ def adj(m):
 def inv(m):
 	return adj(m)/det(m) # also np.linalg.inv(m)
 
+def rank(m):
+	return np.linalg.matrix_rank(m.astype(float))
+
 def solve(eq1,eq2,eq3):
 	variables = list(vars)
-	c_M = np.empty((0,3)) # coefficient matrix
+	M_c = np.empty((0,3)) # coefficient matrix
 	constants = np.empty((0,1))
 	for eq in (eq1,eq2,eq3):
 		coefs,const = read_expresion(eq)
-		c_M = np.vstack((c_M,coefs))
+		M_c = np.vstack((M_c,coefs))
 		constants = np.vstack((constants,const))
-	a_M = np.concatenate((c_M,constants),axis=1) # augmented matrix
+	M_a = np.concatenate((M_c,constants),axis=1) # augmented matrix
 
-	if det(c_M) != 0: # Independent system
+	if det(M_c) != 0:
+		system_type = "Independent System"
 		# Cramer's rule
-		Mx = np.copy(c_M)
+		Mx = np.copy(M_c)
 		Mx[:,0] = constants[:,0]
-		My = np.copy(c_M)
+		My = np.copy(M_c)
 		My[:,1] = constants[:,0]
-		Mz = np.copy(c_M)
+		Mz = np.copy(M_c)
 		Mz[:,2] = constants[:,0]
-		x = det(Mx)/det(c_M)
-		y = det(My)/det(c_M)
-		z = det(Mz)/det(c_M)
+		x = det(Mx)/det(M_c)
+		y = det(My)/det(M_c)
+		z = det(Mz)/det(M_c)
+	else:
+		# Rouché-Frobenius/Capelli theorem
+		if rank(M_c) != rank(M_a): system_type = "Inconsistent System"
+		elif rank(M_c) == rank(M_a) != 3: system_type = "Dependent System"
+	pass
+
+solve(	"-x + 7y + 5z = 0",
+		"x - y + z = 3",
+		"y + z = -2")
